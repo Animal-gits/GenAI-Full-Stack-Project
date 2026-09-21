@@ -1,0 +1,38 @@
+{
+  "name": "genai---full-stack-project",
+  "version": "1.0.0",
+  "description": "\"# GenAI-Full-Stack-Project\"",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Animal-gits/GenAI-Full-Stack-Project.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Animal-gits/GenAI-Full-Stack-Project/issues"
+  },
+  "homepage": "https://github.com/Animal-gits/GenAI-Full-Stack-Project#readme",
+  "dependencies": {
+    "@google/genai": "^2.23.0",
+    "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.1",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.10.1",
+    "multer": "^2.4.0",
+    "nodemon": "^3.1.14",
+    "pdf-parser": "^1.0.5",
+    "puppeteer": "^25.11.0",
+    "zod": "^4.6.5",
+    "zod-to-json-schema": "^3.25.2"
+  }
+}
