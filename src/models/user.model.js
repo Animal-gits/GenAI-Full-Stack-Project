@@ -17,6 +17,9 @@ const userSchema = await Schema({
     password : {
         type : String,
         required : true
+    },
+    refreshToken : {
+        type : String
     }
 } , {TimeRanges : true})
 
