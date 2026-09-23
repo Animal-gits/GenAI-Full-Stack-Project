@@ -3,6 +3,8 @@ import {User} from "../models/user.model.js"
 import {ApiResponse} from "../helpers/ApiResponse.js"
 import {asyncHandler} from "../helpers/asyncHandler.js"
 import {generateAccessToken , generateRefreshToken} from "../config/generateToken.js"
+import jwt from "jsonwebtoken"
+import env from "../config/env.js";
 
 const registerUser = asyncHandler(async(req , res) => {
     const {username , email , password} = req.body
@@ -144,8 +146,58 @@ const logoutUser = asyncHandler(async (req, res) => {
     }
 })
 
+const refreshAccessToken = asyncHandler(async (req , res) => {
+    const incomingRefreshToken = req.boyd.refreshToken || req.cookies?.refreshToken
+    try {
+        const decoded = jwt.verify(
+            incomingRefreshToken , env.REFRESH_TOKEN_SECRET
+        )
+        if(!decoded){
+            throw new ApiError(404 , 'Not Authorized . Token not found!')
+        }
+
+        const user = await User.findById(decoded._id).select("password")
+        if(!user){
+            throw new ApiError(404 , "Not Authorized . Token not found!")
+        }
+
+        if(incomingRefreshToken !== user.refreshToken){
+            throw new ApiError(404 , "Not Authorized . Token not found!")
+        }
+
+        const accessToken = await generateAccessToken(user._id)
+        const newRefreshToken = await generateRefreshToken(user._id)
+
+        const newUser = await User.findByIdAndUpdate(
+            user._id,
+            {
+                $set : {
+                    refreshToken : newRefreshToken
+                }
+            },
+            {new : true}
+        ).select("-password -refreshToken")
+
+        const cookieOpions = {
+            httpOnly : true,
+            secure : true
+        }
+
+        return res
+            .status(200)
+            .cookie("accessToken" , accessToken  , cookieOptions )
+            .cookie("refreshToken" , refreshToken  , cookieOptions )
+            .json(
+                new ApiResponse(200 , newUser , "Access Token refreshed succcessfully")
+            )
+    } catch (error) {
+        throw new ApiError(404, "Not Authorized" || error.message)
+    }
+})
+
 export {
     loginUser,
     registerUser,
-    logoutUser
+    logoutUser,
+    refreshAccessToken
 }
