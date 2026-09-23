@@ -53,7 +53,7 @@ const registerUser = asyncHandler(async(req , res) => {
     if(!registeredUser){
         throw new ApiError(401 , "Error occured in registering your acccount")
     }else{
-        res
+        return res
             .cookie("accessToken" , accessToken , cookieOptions)
             .cookie("refreshToken", refreshToken , cookieOptions)
             .status(201)
@@ -107,7 +107,7 @@ const loginUser = asyncHandler(async (req, res) => {
     if(!loggedInUser){
         throw new ApiError(404 , "Failed to log in User")
     }else{
-        res
+        return res
             .status(200)
             .cookie("accessToken" , accessToken , cookieOptions)
             .cookie("refreshToken", refreshToken , cookieOptions)
@@ -116,3 +116,36 @@ const loginUser = asyncHandler(async (req, res) => {
             )
     }
 })
+
+const logoutUser = asyncHandler(async (req, res) => {
+    const loggedOutUser = await User.findByIdAndUpdate( 
+    req.user._id
+    , {
+        $unset : {
+            refreshToken : 1
+        }
+    } , {new : true}).select("-password -refreshToken")
+
+    const cookiesOptions = {
+        httpOnly: true,
+        secure: true
+    }
+
+    if(!loggedOutUser){
+        throw new ApiError(401 , "User log out processs failed")
+    }else{
+        return res
+                .clearCookies("accessToken" , cookieOptions)
+                .clearCookies("refreshToken" , cookieOptions)
+                .status(200)
+                json(
+                    new ApiResponse(200 , loggedOutUser  , "User logged-out successfully!")
+                )
+    }
+})
+
+export {
+    loginUser,
+    registerUser,
+    logoutUser
+}
