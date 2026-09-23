@@ -1,3 +1,5 @@
+import env from "./env.js"
+
 const cookieOptions = {
     httpOnly: true,
     secure: env.NODE_ENV === "production",
