@@ -40,6 +40,12 @@ if(!process.env.REFRESH_TOKEN_EXPIRY){
     )
     process.exit(1)
 }
+if(!process.env.CORS_ORIGIN){
+    console.error(
+        "Warning : CORS_ORIGIN is not set. Please set it in the .env file."
+    )
+    process.exit(1)
+}
 
 const config = {
     MONGO_URI : process.env.MONGO_URI,
@@ -47,7 +53,8 @@ const config = {
     ACCESS_TOKEN_SECRET : process.env.ACCESS_TOKEN_SECRET,
     REFRESH_TOKEN_SECRET : process.env.REFRESH_TOKEN_SECRET,
     ACCESS_TOKEN_EXPIRY : process.env.ACCESS_TOKEN_EXPIRY,
-    REFRESH_TOKEN_EXPIRY : process.env.REFRESH_TOKEN_EXPIRY
+    REFRESH_TOKEN_EXPIRY : process.env.REFRESH_TOKEN_EXPIRY,
+    CORS_ORIGIN : process.env.CORS_ORIGIN
 }
 
 export default Object.freeze(config)
