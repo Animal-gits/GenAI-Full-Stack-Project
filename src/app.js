@@ -20,7 +20,7 @@ import AuthRouter from "../src/routes/auth.routes.js"
 
 
 // routes declaraton
-appp.use('/api/v1/auth' , AuthRouter)
+app.use('/api/v1/auth' , AuthRouter)
 //error middleware
 
 export default app

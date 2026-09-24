@@ -3,6 +3,9 @@ import {User} from "../models/user.model.js"
 import {ApiResponse} from "../helpers/ApiResponse.js"
 import {asyncHandler} from "../helpers/asyncHandler.js"
 import {generateAccessToken , generateRefreshToken} from "../config/generateToken.js"
+import jwt from "jsonwebtoken"
+import env from "../config/env.js";
+import cookieOptions from "../config/cookieOptions.js"
 
 const registerUser = asyncHandler(async(req , res) => {
     const {username , email , password} = req.body
@@ -44,11 +47,6 @@ const registerUser = asyncHandler(async(req , res) => {
         { new : true}
     ).select("-password -refreshToken")
 
-
-    const cookieOptions ={
-        httpOnly : true,
-        secure : true
-    }
 
     if(!registeredUser){
         throw new ApiError(401 , "Error occured in registering your acccount")
@@ -99,10 +97,6 @@ const loginUser = asyncHandler(async (req, res) => {
         {new : true}
     ).select("-password -refreshToken")
 
-    const cookieOptions = {
-        httpOnly : true,
-        secure : true
-    }
 
     if(!loggedInUser){
         throw new ApiError(404 , "Failed to log in User")
@@ -126,10 +120,6 @@ const logoutUser = asyncHandler(async (req, res) => {
         }
     } , {new : true}).select("-password -refreshToken")
 
-    const cookiesOptions = {
-        httpOnly: true,
-        secure: true
-    }
 
     if(!loggedOutUser){
         throw new ApiError(401 , "User log out processs failed")
@@ -144,8 +134,53 @@ const logoutUser = asyncHandler(async (req, res) => {
     }
 })
 
+const refreshAccessToken = asyncHandler(async (req , res) => {
+    const incomingRefreshToken = req.body.refreshToken || req.cookies?.refreshToken
+    try {
+        const decoded = jwt.verify(
+            incomingRefreshToken , env.REFRESH_TOKEN_SECRET
+        )
+        if(!decoded){
+            throw new ApiError(404 , 'Not Authorized . Token not found!')
+        }
+
+        const user = await User.findById(decoded._id).select("-password")
+        if(!user){
+            throw new ApiError(404 , "Not Authorized . Token not found!")
+        }
+
+        if(incomingRefreshToken !== user.refreshToken){
+            throw new ApiError(404 , "Not Authorized . Token not found!")
+        }
+
+        const accessToken = await generateAccessToken(user._id)
+        const newRefreshToken = await generateRefreshToken(user._id)
+
+        const newUser = await User.findByIdAndUpdate(
+            user._id,
+            {
+                $set : {
+                    refreshToken : newRefreshToken
+                }
+            },
+            {new : true}
+        ).select("-password -refreshToken")
+
+        return res
+            .status(200)
+            .cookie("accessToken" , accessToken  , cookieOptions )
+            .cookie("refreshToken" , newRefreshToken  , cookieOptions )
+            .json(
+                new ApiResponse(200 , newUser , "Access Token refreshed succcessfully")
+            )
+    } catch (error) {
+        throw new ApiError(404, "Not Authorized" || error.message)
+    }
+})
+
 export {
     loginUser,
     registerUser,
-    logoutUser
+    logoutUser,
+    refreshAccessToken
 }
