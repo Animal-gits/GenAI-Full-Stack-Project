@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/Animal-gits/GenAI-Full-Stack-Project#readme",
   "dependencies": {
-    "@google/genai": "^2.23.0",
+    "@google/genai": "^2.24.0",
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
@@ -31,6 +31,7 @@
     "morgan": "^1.12.1",
     "multer": "^2.4.0",
     "nodemon": "^3.1.14",
+    "pdf-parse": "^2.4.5",
     "pdf-parser": "^1.0.5",
     "puppeteer": "^25.11.0",
     "zod": "^4.6.5",

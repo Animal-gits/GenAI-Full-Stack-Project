@@ -1,8 +1,8 @@
-import env from "../config/env";
-import { ApiError } from "../helpers/ApiError";
-import { asyncHandler } from "../helpers/asyncHandler";
+import env from "../config/env.js";
+import { ApiError } from "../helpers/ApiError.js";
+import { asyncHandler } from "../helpers/asyncHandler.js";
 import jwt from "jsonwebtoken"
-import { User } from "../models/user.model";
+import { User } from "../models/user.model.js";
 
 
 const protect = asyncHandler(async (req , res , next) => {

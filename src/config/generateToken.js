@@ -1,5 +1,5 @@
 import {ApiError} from "../helpers/ApiError.js"
-import { User } from "../models/user.model";
+import { User } from "../models/user.model.js";
 
 const generateAccessToken = async (userId) => {
     try {

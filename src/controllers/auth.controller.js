@@ -1,4 +1,4 @@
-import { ApiError } from "../helpers/ApiError";
+import { ApiError } from "../helpers/ApiError.js";
 import {User} from "../models/user.model.js"
 import {ApiResponse} from "../helpers/ApiResponse.js"
 import {asyncHandler} from "../helpers/asyncHandler.js"
