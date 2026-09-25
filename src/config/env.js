@@ -46,6 +46,12 @@ if(!process.env.CORS_ORIGIN){
     )
     process.exit(1)
 }
+if(!process.env.GOOGLE_GENAI_API_KEY){
+    console.error(
+        "Warning : GOOGLE_GENAI_API_KEY is not set. Please set it in the .env file."
+    )
+    process.exit(1)
+}
 
 const config = {
     MONGO_URI : process.env.MONGO_URI,
@@ -54,7 +60,8 @@ const config = {
     REFRESH_TOKEN_SECRET : process.env.REFRESH_TOKEN_SECRET,
     ACCESS_TOKEN_EXPIRY : process.env.ACCESS_TOKEN_EXPIRY,
     REFRESH_TOKEN_EXPIRY : process.env.REFRESH_TOKEN_EXPIRY,
-    CORS_ORIGIN : process.env.CORS_ORIGIN
+    CORS_ORIGIN : process.env.CORS_ORIGIN,
+    GOOGLE_GENAI_API_KEY : process.env.GOOGLE_GENAI_API_KEY
 }
 
 export default Object.freeze(config)
