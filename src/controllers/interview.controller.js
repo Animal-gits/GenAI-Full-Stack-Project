@@ -69,7 +69,20 @@ const getInterviewReportById = asyncHandler(async (req , res) => {
         )
 })
 
+const getAllInterviewReports = asyncHandler(async (req , res) => {
+    const interviewReports = await InterviewReport.find({user : req.user._id}).sort({createdAt : -1}).select("-resume -seflfDescription -jobDescription -__v -technicalQuestions -behavioralQuestions -skillGaps -preparationPlan")
+
+    if(!interviewReports){
+        throw new ApiError(400 , "Failed to fetch interview reports")
+    }
+
+    res
+        .status(200)
+        .json(new ApiResponse(200 , interviewReports , "Interview Reports fetched successfully"))
+})
+
 export {
     generateInterviewReportController,
-    getInterviewReportById
+    getInterviewReportById,
+    getAllInterviewReports
 }
