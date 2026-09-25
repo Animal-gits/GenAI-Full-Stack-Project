@@ -20,7 +20,7 @@ const interviewReportSchema = z.object({
         intention: z.string().describe("The intention of interviewer behind this question"),
         answer: z.string().describe("How to answer this question, what points to cover, what approach to take etc.")
     })).describe("Behavioral questions that can be asked in the interview along with their intention and how to answer them"),
-    skillsGap: z.array(z.object({
+    skillGaps: z.array(z.object({
         skill: z.string().describe("The skill which the candidate is lacking"),
         severity: z.enum(["low", 'medium', "high"]).describe("The severity of this skill gap, i.e. how important is this skill for the job and how much it can impact the candidate's chances")
     })).describe("List of skill gaps in the candidate's profile along with their severity"),
@@ -32,12 +32,12 @@ const interviewReportSchema = z.object({
     title: z.string().describe("The title of the job for which the interview report is generated"),
 })
 
-const generateInterviewReport = async ({ resume, selfdescribe, jobdescribe }) => {
+const generateInterviewReport = async ({ resume, selfDescription, jobDescription }) => {
 
     const prompt = `Generate an interview for the candidate with the following details:
         Resume : ${resume}
-        Self describe: ${selfdescribe}
-        Job describe: ${jobdescribe}
+        Self describe: ${self}
+        Job describe: ${jobDescription}
     `
 
     const response = await ai.models.generateContent({

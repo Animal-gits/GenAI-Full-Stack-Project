@@ -24,10 +24,12 @@ app.use(cookieParser())
 
 //routes imports
 import AuthRouter from "../src/routes/auth.routes.js"
+import InterviewRouter from "./routes/interview.routes.js"
 
 
 // routes declaraton
 app.use('/api/v1/auth' , AuthRouter)
+app.use('api/v1/interview' , InterviewRouter)
 //error middleware
 
 export default app
