@@ -24,7 +24,7 @@ const generateRefreshToken = async (userId) => {
         if(!user){
             throw new ApiError(404 , "User not found")
         }
-        const refreshToken = await user.generateRefreshToken
+        const refreshToken = await user.generateRefreshToken()
         if(!refreshToken){
             throw new ApiError(401 , "Auth failed")
         }

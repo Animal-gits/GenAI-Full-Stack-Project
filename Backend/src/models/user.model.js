@@ -25,11 +25,10 @@ const userSchema = await Schema({
 
 userSchema.pre("save" , async function (next) {
     const user = this
-    if(!user.isModified("password")) return next()
+    if(!user.isModified("password")) return
     
     const salt = await bcrypt.genSalt(10)
-    user.password = await bcrypt(user.password , salt)
-    next()
+    user.password = await bcrypt.hash(user.password , salt)
 })
 
 

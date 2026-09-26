@@ -125,17 +125,19 @@ const logoutUser = asyncHandler(async (req, res) => {
         throw new ApiError(401 , "User log out processs failed")
     }else{
         return res
-                .clearCookies("accessToken" , cookieOptions)
-                .clearCookies("refreshToken" , cookieOptions)
+                .clearCookie("accessToken" , cookieOptions)
+                .clearCookie("refreshToken" , cookieOptions)
                 .status(200)
-                json(
+                .json(
                     new ApiResponse(200 , loggedOutUser  , "User logged-out successfully!")
                 )
     }
 })
 
 const refreshAccessToken = asyncHandler(async (req , res) => {
-    const incomingRefreshToken = req.body.refreshToken || req.cookies?.refreshToken
+    // console.log(req.body.refreshToken , "111111111")
+    console.log(req.cookies?.refreshToken , "222222222")
+    const incomingRefreshToken = req.cookies?.refreshToken
     try {
         const decoded = jwt.verify(
             incomingRefreshToken , env.REFRESH_TOKEN_SECRET
@@ -145,10 +147,11 @@ const refreshAccessToken = asyncHandler(async (req , res) => {
         }
 
         const user = await User.findById(decoded._id).select("-password")
+        console.log("User in refreshToken controller:" , user)
         if(!user){
             throw new ApiError(404 , "Not Authorized . Token not found!")
         }
-
+        console.log("----------")
         if(incomingRefreshToken !== user.refreshToken){
             throw new ApiError(404 , "Not Authorized . Token not found!")
         }

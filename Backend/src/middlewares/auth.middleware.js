@@ -3,11 +3,14 @@ import { ApiError } from "../helpers/ApiError.js";
 import { asyncHandler } from "../helpers/asyncHandler.js";
 import jwt from "jsonwebtoken"
 import { User } from "../models/user.model.js";
+import mongoose from "mongoose"
 
 
 const protect = asyncHandler(async (req , res , next) => {
     try {
-        const token = req.cookies?.accessToken || req.headers("Authorization").replace("Bearer " , "")
+        console.log("Auth Middleware started")
+    
+    const token = req.cookies?.accessToken || req.headers("Authorization").replace("Bearer " , "")
 
     if(!token){
         throw new ApiError(404 , "Not Authorized . Token not found!")
@@ -25,8 +28,9 @@ const protect = asyncHandler(async (req , res , next) => {
     }
 
     req.user = user
+
     if(!mongoose.isValidObjectId(req.user._id)){
-            throw new ApiError(400 , "Invalid User ID")
+        throw new ApiError(400 , "Invalid User ID")
     }
     
     next()

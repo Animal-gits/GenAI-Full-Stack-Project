@@ -1,13 +1,16 @@
 import multer from "multer"
 
-const storage = multer.diskStorage({
-    destination : function(req , file , cb){
-        cd(null , "./public/temp")
-    },
-    filename : function (req, file , cb) {
-        cb(null , file.originalname)
+const upload = multer({
+    storage: multer.memoryStorage(),
+    fileFilter: (req, file, cb) => {
+
+        if (file.mimetype !== "application/pdf") {
+            return cb(new Error("Only PDF files are allowed"))
+        }
+
+        cb(null, true)
     }
 })
 
 
-export const upload =  multer({storage})
+export {upload}

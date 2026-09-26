@@ -61,14 +61,14 @@ const preparationPlanSchema = new mongoose.Schema({
 }, { _id: 0 })
 
 const interviewReportSchema = new mongoose.Schema({
-    jobDesription: {
+    jobDescription: {
         type: String,
         required: [true, "Job description is required"]
     },
     resume: {
         type: String
     },
-    self_description: {
+    selfDescription: {
         type: String
     },
     matchScore: {
