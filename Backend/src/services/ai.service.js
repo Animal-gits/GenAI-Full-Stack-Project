@@ -1,9 +1,7 @@
 import { GoogleGenAI } from "@google/genai"
 import { z } from "zod"
-import { zodToJsonSchema } from "zod-to-json-schema"
 import env from "../config/env.js";
 import puppeteer from "puppeteer"
-import { toJSONSchema } from "zod/v4/core";
 
 const ai = new GoogleGenAI({
     apiKey: env.GOOGLE_GENAI_API_KEY
@@ -36,18 +34,10 @@ const interviewReportSchema = z.object({
 
 const generateInterviewReport = async ({ resume, selfDescription, jobDescription }) => {
 
-    const prompt = `Generate an interview report for the candidate with the following details:
+    const prompt = `Generate an interview for the candidate with the following details:
         Resume : ${resume}
         Self describe: ${selfDescription || "Not provided"}
         Job describe: ${jobDescription}
-
-        Rules:
-        - Use only the information in the resume and self description.
-        - If the resume looks like a sample/template or has no real candidate details, do not invent a fake profile.
-        - Return valid JSON only.
-        - Include a job title in the "title" field.
-        - Include at least 3 technical questions and 2 behavioral questions if the candidate profile is substantial enough.
-        - If the profile is weak or insufficient, still return a real JSON object with empty arrays only if necessary, but do not fabricate credentials.
     `
 
     const response = await ai.models.generateContent({
@@ -55,29 +45,17 @@ const generateInterviewReport = async ({ resume, selfDescription, jobDescription
         contents: prompt,
         config: {
             responseMimeType: "application/json",
-            responseSchema: zodToJsonSchema(interviewReportSchema)
+            responseJsonSchema: z.toJSONSchema(interviewReportSchema)
         }
     })
 
-    const rawText = typeof response?.text === "string" && response.text.trim()
-        ? response.text
-        : response?.candidates?.[0]?.content?.parts?.map(part => part?.text || "").join("") || "{}"
-
-    const parsed = JSON.parse(rawText)
-
-    return {
-        ...parsed,
-        title: typeof parsed?.title === "string" && parsed.title.trim() ? parsed.title.trim() : jobDescription.trim(),
-        matchScore: typeof parsed?.matchScore === "number" ? parsed.matchScore : 0,
-        technicalQuestions: Array.isArray(parsed?.technicalQuestions) ? parsed.technicalQuestions : [],
-        behavioralQuestions: Array.isArray(parsed?.behavioralQuestions) ? parsed.behavioralQuestions : [],
-        skillGaps: Array.isArray(parsed?.skillGaps) ? parsed.skillGaps : [],
-        preparationPlan: Array.isArray(parsed?.preparationPlan) ? parsed.preparationPlan : []
-    }
+    return JSON.parse(response.text)
 }
 
 const generatePdfFromHTML= async (htmlContent) => {
-    const browser = await puppeteer.launch()
+    const browser = await puppeteer.launch({
+        pipe: true   // added — avoids reading Chrome's stdout for the WS endpoint
+    })
     const page = await browser.newPage()
     await page.setContent(htmlContent , {waitUntil : "networkidle0"})
 
@@ -117,7 +95,7 @@ const generateResumePdf = async ({resume , selfDescription , jobDescription}) =>
         contents : prompt,
         config : {
             responseMimeType : "application/json",
-            responseSchema : zodToJsonSchema(resumePdfSchema)
+            responseJsonSchema : z.toJSONSchema(resumePdfSchema)
         }
     })
 

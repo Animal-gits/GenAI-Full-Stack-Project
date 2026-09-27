@@ -34,6 +34,10 @@ const generateInterviewReportController = asyncHandler(async (req, res) => {
         throw new ApiError(400, "The response from AI did not work")
     }
 
+    if (!InterviewReportByAI?.title) {
+    throw new ApiError(422, "AI response was missing required fields, please retry")
+}
+
     const InterviewReportRes = await InterviewReport.create({
         user: req.user._id,
         resume: resumeFileContent.text,
